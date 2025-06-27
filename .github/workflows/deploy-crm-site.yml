@@ -1,0 +1,37 @@
+name: Build and Deploy CRM.Site to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore ./CRM_Olimpiadas.sln
+
+      - name: Build
+        run: dotnet build ./CRM_Olimpiadas.sln --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish ./CRM.WebApp.Site/CRM.WebApp.Site.csproj --configuration Release --output publish --no-build
+
+      - name: Create deployment package
+        run: zip -r published.zip publish
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'crmIngressoConecta'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_SITE }}
+          package: published.zip
