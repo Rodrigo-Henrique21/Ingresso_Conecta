@@ -33,5 +33,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'appIngressoConecta'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_SITE_INGRESSO }}
           package: published.zip

@@ -33,5 +33,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'crmIngressoConecta'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_SITE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_SITE_CRM }}
           package: published.zip
