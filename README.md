@@ -1,2 +1,1 @@
-# Ingresso_Conecta
-Repositório destinado para migração da aplicação de vendas de ingressos com CRM
+Seja bem vindo ao repositório de código das Olimpíadas Azure 2024!

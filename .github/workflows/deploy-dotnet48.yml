@@ -1,0 +1,36 @@
+name: Build and Deploy ASP.NET 4.8 App to Azure Web App
+
+on:
+  push:
+    branches:
+      - main    # Ou o branch que preferir
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild Path
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore ./CRM_Olimpiadas.sln
+
+      - name: Build solution
+        run: msbuild ./CRM_Olimpiadas.sln /p:Configuration=Release
+
+      - name: Publish website
+        run: msbuild ./CRM.WebApp.Ingresso.csproj /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:Configuration=Release /p:WebPublishMethod=FileSystem /p:publishUrl="$(Build.ArtifactStagingDirectory)"
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'appIngressoConecta'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: ./published.zip
