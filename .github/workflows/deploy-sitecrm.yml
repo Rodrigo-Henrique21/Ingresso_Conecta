@@ -27,7 +27,7 @@ jobs:
         run: dotnet publish ./CRM.WebApp.Site/CRM.WebApp.Site.csproj --configuration Release --output publish --no-build
 
       - name: Create deployment package
-        run: zip -r published.zip publish
+        run: cd publish && zip -r ../published.zip .
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
