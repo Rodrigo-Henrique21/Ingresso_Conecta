@@ -1,0 +1,1834 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vulnerabilityAssessments_Default_storageContainerPath": {
+            "type": "SecureString"
+        },
+        "sites_appIngressoConecta_name": {
+            "defaultValue": "appIngressoConecta",
+            "type": "String"
+        },
+        "sites_crmIngressoConecta_name": {
+            "defaultValue": "crmIngressoConecta",
+            "type": "String"
+        },
+        "vaults_kv_modernizacao_prd_01_name": {
+            "defaultValue": "kv-modernizacao-prd-01",
+            "type": "String"
+        },
+        "privateEndpoints_pvt_endp_sql01_name": {
+            "defaultValue": "pvt-endp-sql01",
+            "type": "String"
+        },
+        "migrateProjects_prj_mgt_web_apps_name": {
+            "defaultValue": "prj-mgt-web-apps",
+            "type": "String"
+        },
+        "serverfarms_srv_plan_ingresso_conecta_name": {
+            "defaultValue": "srv-plan-ingresso-conecta",
+            "type": "String"
+        },
+        "servers_srv_sqlserver_ingresso_conecta_name": {
+            "defaultValue": "srv-sqlserver-ingresso-conecta",
+            "type": "String"
+        },
+        "privateEndpoints_pvt_endp_kv_prd_01_name": {
+            "defaultValue": "pvt-endp-kv-prd-01",
+            "type": "String"
+        },
+        "userAssignedIdentities_oidc_msi_90f2_name": {
+            "defaultValue": "oidc-msi-90f2",
+            "type": "String"
+        },
+        "userAssignedIdentities_oidc_msi_a8f9_name": {
+            "defaultValue": "oidc-msi-a8f9",
+            "type": "String"
+        },
+        "certificates_kv_modernizacao_prd_01_certificado_ssl_crm_name": {
+            "defaultValue": "kv-modernizacao-prd-01-certificado-ssl-crm",
+            "type": "String"
+        },
+        "certificates_kv_modernizacao_prd_01_certificado_ssl_ingresso_name": {
+            "defaultValue": "kv-modernizacao-prd-01-certificado-ssl-ingresso",
+            "type": "String"
+        },
+        "virtualNetworks_vnet_west2_spoke01_externalid": {
+            "defaultValue": "/subscriptions/21aa7438-5e1e-4434-b029-eb79f0bcd867/resourceGroups/rg-mig-as-is-east/providers/Microsoft.Network/virtualNetworks/vnet-west2-spoke01",
+            "type": "String"
+        },
+        "privateDnsZones_privatelink_database_windows_net_externalid": {
+            "defaultValue": "/subscriptions/21aa7438-5e1e-4434-b029-eb79f0bcd867/resourceGroups/rg-mig-as-is-east/providers/Microsoft.Network/privateDnsZones/privatelink.database.windows.net",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[parameters('vaults_kv_modernizacao_prd_01_name')]",
+            "location": "westus2",
+            "tags": {
+                "ambiente": "cloud",
+                "centro de custo": "modernizacao",
+                "projeto": "olimpiadas azure"
+            },
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "48ac7022-d608-4e96-b6d3-d463287f6104",
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Deny",
+                    "ipRules": [],
+                    "virtualNetworkRules": []
+                },
+                "accessPolicies": [
+                    {
+                        "tenantId": "48ac7022-d608-4e96-b6d3-d463287f6104",
+                        "objectId": "cb756b92-9a0d-45b1-8679-0a7ef54a4b0a",
+                        "permissions": {
+                            "certificates": [],
+                            "keys": [],
+                            "secrets": [
+                                "Get",
+                                "List"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "48ac7022-d608-4e96-b6d3-d463287f6104",
+                        "objectId": "5e6429d0-9332-41d8-8287-11d0133baf6b",
+                        "permissions": {
+                            "certificates": [],
+                            "keys": [],
+                            "secrets": [
+                                "list",
+                                "get"
+                            ]
+                        }
+                    },
+                    {
+                        "tenantId": "48ac7022-d608-4e96-b6d3-d463287f6104",
+                        "objectId": "3bbfc332-e23c-4a33-a630-a4a941d09c3e",
+                        "permissions": {
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers"
+                            ],
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "GetRotationPolicy",
+                                "SetRotationPolicy",
+                                "Rotate"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": true,
+                "enabledForDiskEncryption": true,
+                "enabledForTemplateDeployment": true,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enableRbacAuthorization": false,
+                "vaultUri": "[concat('https://', parameters('vaults_kv_modernizacao_prd_01_name'), '.vault.azure.net/')]",
+                "provisioningState": "Succeeded",
+                "publicNetworkAccess": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+            "apiVersion": "2025-01-31-preview",
+            "name": "[parameters('userAssignedIdentities_oidc_msi_90f2_name')]",
+            "location": "westus2"
+        },
+        {
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+            "apiVersion": "2025-01-31-preview",
+            "name": "[parameters('userAssignedIdentities_oidc_msi_a8f9_name')]",
+            "location": "westus2"
+        },
+        {
+            "type": "Microsoft.Migrate/migrateProjects",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('migrateProjects_prj_mgt_web_apps_name')]",
+            "location": "centralus",
+            "tags": {
+                "Migrate Project": "prj-mgt-web-apps"
+            },
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "serviceEndpoint": "https://1aa8cc3f-502b-413a-ae34-39ac7feedc19-isv.cus.hub.privatelink.prod.migration.windowsazure.com/resources/1aa8cc3f-502b-413a-ae34-39ac7feedc19"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[parameters('servers_srv_sqlserver_ingresso_conecta_name')]",
+            "location": "westus2",
+            "tags": {
+                "ambiente": "cloud",
+                "centro de custo": "modernizacao",
+                "projeto": "olimpiadas azure"
+            },
+            "kind": "v12.0",
+            "properties": {
+                "administratorLogin": "rodrigo",
+                "version": "12.0",
+                "minimalTlsVersion": "1.2",
+                "publicNetworkAccess": "Disabled",
+                "restrictOutboundNetworkAccess": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2024-04-01",
+            "name": "[parameters('serverfarms_srv_plan_ingresso_conecta_name')]",
+            "location": "West US 2",
+            "tags": {
+                "ambiente": "cloud",
+                "centro de custo": "modernizacao",
+                "projeto": "olimpiadas azure"
+            },
+            "sku": {
+                "name": "B1",
+                "tier": "Basic",
+                "size": "B1",
+                "family": "B",
+                "capacity": 1
+            },
+            "kind": "app",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/keys",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_modernizacao_prd_01_name'), '/certificado-ssl-api')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1750636800,
+                    "exp": 1758499199
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/keys",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_modernizacao_prd_01_name'), '/certificado-ssl-crm')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1750636800,
+                    "exp": 1758499199
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/keys",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_modernizacao_prd_01_name'), '/certificado-ssl-ingresso')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1750636800,
+                    "exp": 1758499199
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/privateEndpointConnections",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_modernizacao_prd_01_name'), '/pvt-endp-kv-prd-01_cc0a73df-c6f6-49a0-b43a-d673902571a3')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "provisioningState": "Succeeded",
+                "privateEndpoint": {},
+                "privateLinkServiceConnectionState": {
+                    "status": "Approved",
+                    "actionsRequired": "None"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_modernizacao_prd_01_name'), '/certificado-ssl-api')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "contentType": "application/x-pkcs12",
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1750636800,
+                    "exp": 1758499199
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_modernizacao_prd_01_name'), '/certificado-ssl-crm')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "contentType": "application/x-pkcs12",
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1750636800,
+                    "exp": 1758499199
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-12-01-preview",
+            "name": "[concat(parameters('vaults_kv_modernizacao_prd_01_name'), '/certificado-ssl-ingresso')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "contentType": "application/x-pkcs12",
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1750636800,
+                    "exp": 1758499199
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
+            "apiVersion": "2025-01-31-preview",
+            "name": "[concat(parameters('userAssignedIdentities_oidc_msi_90f2_name'), '/oidc-credential-9eab')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentities_oidc_msi_90f2_name'))]"
+            ],
+            "properties": {
+                "issuer": "https://token.actions.githubusercontent.com",
+                "subject": "repo:Rodrigo-Henrique21/Ingresso_Conecta:ref:refs/heads/main",
+                "audiences": [
+                    "api://AzureADTokenExchange"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
+            "apiVersion": "2025-01-31-preview",
+            "name": "[concat(parameters('userAssignedIdentities_oidc_msi_a8f9_name'), '/oidc-credential-b621')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentities_oidc_msi_a8f9_name'))]"
+            ],
+            "properties": {
+                "issuer": "https://token.actions.githubusercontent.com",
+                "subject": "repo:Rodrigo-Henrique21/Ingresso_Conecta:ref:refs/heads/main",
+                "audiences": [
+                    "api://AzureADTokenExchange"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Migrate/MigrateProjects/Solutions",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[concat(parameters('migrateProjects_prj_mgt_web_apps_name'), '/Servers-Assessment-ServerAssessment')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Migrate/MigrateProjects', parameters('migrateProjects_prj_mgt_web_apps_name'))]"
+            ],
+            "properties": {
+                "tool": "ServerAssessment",
+                "purpose": "Assessment",
+                "goal": "Servers",
+                "status": "Active",
+                "cleanupState": "None",
+                "summary": {
+                    "instanceType": "Servers",
+                    "discoveredCount": 0,
+                    "assessedCount": 0,
+                    "replicatingCount": 0,
+                    "testMigratedCount": 0,
+                    "migratedCount": 0
+                },
+                "details": {
+                    "groupCount": 0,
+                    "assessmentCount": 0,
+                    "extendedDetails": {}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Migrate/MigrateProjects/Solutions",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[concat(parameters('migrateProjects_prj_mgt_web_apps_name'), '/Servers-Discovery-ServerDiscovery')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Migrate/MigrateProjects', parameters('migrateProjects_prj_mgt_web_apps_name'))]"
+            ],
+            "properties": {
+                "tool": "ServerDiscovery",
+                "purpose": "Discovery",
+                "goal": "Servers",
+                "status": "Inactive",
+                "cleanupState": "None",
+                "summary": {
+                    "instanceType": "Servers",
+                    "discoveredCount": 0,
+                    "assessedCount": 0,
+                    "replicatingCount": 0,
+                    "testMigratedCount": 0,
+                    "migratedCount": 0
+                },
+                "details": {
+                    "groupCount": 0,
+                    "assessmentCount": 0,
+                    "extendedDetails": {}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Migrate/MigrateProjects/Solutions",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[concat(parameters('migrateProjects_prj_mgt_web_apps_name'), '/Servers-Migration-ServerMigration')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Migrate/MigrateProjects', parameters('migrateProjects_prj_mgt_web_apps_name'))]"
+            ],
+            "properties": {
+                "tool": "ServerMigration",
+                "purpose": "Migration",
+                "goal": "Servers",
+                "status": "Active",
+                "cleanupState": "None",
+                "summary": {
+                    "instanceType": "Servers",
+                    "discoveredCount": 0,
+                    "assessedCount": 0,
+                    "replicatingCount": 0,
+                    "testMigratedCount": 0,
+                    "migratedCount": 0
+                },
+                "details": {
+                    "groupCount": 0,
+                    "assessmentCount": 0,
+                    "extendedDetails": {}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Migrate/MigrateProjects/Solutions",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[concat(parameters('migrateProjects_prj_mgt_web_apps_name'), '/Servers-Migration-ServerMigration_DataReplication')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Migrate/MigrateProjects', parameters('migrateProjects_prj_mgt_web_apps_name'))]"
+            ],
+            "properties": {
+                "tool": "ServerMigration_DataReplication",
+                "purpose": "Migration",
+                "goal": "Servers",
+                "status": "Inactive",
+                "cleanupState": "None",
+                "summary": {
+                    "instanceType": "Servers",
+                    "discoveredCount": 0,
+                    "assessedCount": 0,
+                    "replicatingCount": 0,
+                    "testMigratedCount": 0,
+                    "migratedCount": 0
+                },
+                "details": {
+                    "groupCount": 0,
+                    "assessmentCount": 0,
+                    "extendedDetails": {}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Migrate/MigrateProjects/Solutions",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[concat(parameters('migrateProjects_prj_mgt_web_apps_name'), '/WebApplications-Assessment-AppServiceMigrationAssistant')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Migrate/MigrateProjects', parameters('migrateProjects_prj_mgt_web_apps_name'))]"
+            ],
+            "properties": {
+                "tool": "AppServiceMigrationAssistant",
+                "purpose": "Assessment",
+                "goal": "WebApplications",
+                "status": "Active",
+                "cleanupState": "None",
+                "summary": {},
+                "details": {
+                    "groupCount": 0,
+                    "assessmentCount": 0,
+                    "extendedDetails": {}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Migrate/MigrateProjects/Solutions",
+            "apiVersion": "2018-09-01-preview",
+            "name": "[concat(parameters('migrateProjects_prj_mgt_web_apps_name'), '/WebApplications-Migration-AppServiceMigrationAssistant')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Migrate/MigrateProjects', parameters('migrateProjects_prj_mgt_web_apps_name'))]"
+            ],
+            "properties": {
+                "tool": "AppServiceMigrationAssistant",
+                "purpose": "Migration",
+                "goal": "WebApplications",
+                "status": "Active",
+                "cleanupState": "None",
+                "summary": {},
+                "details": {
+                    "groupCount": 0,
+                    "assessmentCount": 0,
+                    "extendedDetails": {}
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2024-05-01",
+            "name": "[parameters('privateEndpoints_pvt_endp_kv_prd_01_name')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "tags": {
+                "ambiente": "cloud",
+                "centro de custo": "modernizacao",
+                "projeto": "olimpiadas azure"
+            },
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[concat(parameters('privateEndpoints_pvt_endp_kv_prd_01_name'), '_cc0a73df-c6f6-49a0-b43a-d673902571a3')]",
+                        "id": "[concat(resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_pvt_endp_kv_prd_01_name')), concat('/privateLinkServiceConnections/', parameters('privateEndpoints_pvt_endp_kv_prd_01_name'), '_cc0a73df-c6f6-49a0-b43a-d673902571a3'))]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]",
+                            "groupIds": [
+                                "vault"
+                            ],
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved",
+                                "actionsRequired": "None"
+                            }
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "subnet": {
+                    "id": "[concat(parameters('virtualNetworks_vnet_west2_spoke01_externalid'), '/subnets/sub-pvt-endp-kv')]"
+                },
+                "ipConfigurations": [],
+                "customDnsConfigs": [
+                    {
+                        "fqdn": "kv-modernizacao-prd-01.vault.azure.net",
+                        "ipAddresses": [
+                            "10.100.0.4"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2024-05-01",
+            "name": "[parameters('privateEndpoints_pvt_endp_sql01_name')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "tags": {
+                "ambiente": "cloud",
+                "centro de custo": "modernizacao",
+                "projeto": "olimpiadas azure"
+            },
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpoints_pvt_endp_sql01_name')]",
+                        "id": "[concat(resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_pvt_endp_sql01_name')), concat('/privateLinkServiceConnections/', parameters('privateEndpoints_pvt_endp_sql01_name')))]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]",
+                            "groupIds": [
+                                "sqlServer"
+                            ],
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved",
+                                "description": "Auto-approved",
+                                "actionsRequired": "None"
+                            }
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "customNetworkInterfaceName": "[concat(parameters('privateEndpoints_pvt_endp_sql01_name'), '-nic')]",
+                "subnet": {
+                    "id": "[concat(parameters('virtualNetworks_vnet_west2_spoke01_externalid'), '/subnets/sub-pvt-endp-sql')]"
+                },
+                "ipConfigurations": [],
+                "customDnsConfigs": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "2024-05-01",
+            "name": "[concat(parameters('privateEndpoints_pvt_endp_sql01_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_pvt_endp_sql01_name'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "privatelink-database-windows-net",
+                        "properties": {
+                            "privateDnsZoneId": "[parameters('privateDnsZones_privatelink_database_windows_net_externalid')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advancedThreatProtectionSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/connectionPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/default')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "connectionType": "Default"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "tags": {
+                "ambiente": "cloud",
+                "centro de custo": "modernizacao",
+                "projeto": "olimpiadas azure"
+            },
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard",
+                "capacity": 10
+            },
+            "kind": "v12.0,user",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 10737418240,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false,
+                "readScale": "Disabled",
+                "requestedBackupStorageRedundancy": "Local",
+                "maintenanceConfigurationId": "/subscriptions/21aa7438-5e1e-4434-b029-eb79f0bcd867/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default",
+                "isLedgerOn": false,
+                "availabilityZone": "NoPreference"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advancedThreatProtectionSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/master/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/devOpsAuditingSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/encryptionProtector",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyName": "ServiceManaged",
+                "serverKeyType": "ServiceManaged",
+                "autoRotationEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/extendedAuditingSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "isManagedIdentityInUse": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/AllowAllWindowsAzureIps')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/ClientIPAddress_2025-6-22_19-20-24')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "startIpAddress": "187.94.160.156",
+                "endIpAddress": "187.94.160.156"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/keys",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/ServiceManaged')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyType": "ServiceManaged"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/securityAlertPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/sqlVulnerabilityAssessments",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/virtualNetworkRules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/newVnetRule-Migration')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "virtualNetworkSubnetId": "[concat(parameters('virtualNetworks_vnet_west2_spoke01_externalid'), '/subnets/sub-db01')]",
+                "ignoreMissingVnetServiceEndpoint": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                },
+                "storageContainerPath": "[parameters('vulnerabilityAssessments_Default_storageContainerPath')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/certificates",
+            "apiVersion": "2024-04-01",
+            "name": "[parameters('certificates_kv_modernizacao_prd_01_certificado_ssl_crm_name')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "hostNames": [
+                    "crm.dadossobreaprendizado.cloud"
+                ],
+                "keyVaultId": "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]",
+                "keyVaultSecretName": "certificado-ssl-crm"
+            }
+        },
+        {
+            "type": "Microsoft.Web/certificates",
+            "apiVersion": "2024-04-01",
+            "name": "[parameters('certificates_kv_modernizacao_prd_01_certificado_ssl_ingresso_name')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]"
+            ],
+            "properties": {
+                "hostNames": [
+                    "ingresso.dadossobreaprendizado.cloud"
+                ],
+                "keyVaultId": "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_kv_modernizacao_prd_01_name'))]",
+                "keyVaultSecretName": "certificado-ssl-ingresso"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2024-04-01",
+            "name": "[parameters('sites_appIngressoConecta_name')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_srv_plan_ingresso_conecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "kind": "app,migration",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "appingressoconecta.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "ingresso.dadossobreaprendizado.cloud",
+                        "sslState": "SniEnabled",
+                        "thumbprint": "E22FEF016617B84A3B9E24EDC2FBB2CB67AA6F18",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "appingressoconecta.scm.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_srv_plan_ingresso_conecta_name'))]",
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "dnsConfiguration": {},
+                "vnetRouteAllEnabled": true,
+                "vnetImagePullEnabled": false,
+                "vnetContentShareEnabled": false,
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": false,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 0,
+                    "minimumElasticInstanceCount": 1
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": true,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "ipMode": "IPv4",
+                "vnetBackupRestoreEnabled": false,
+                "customDomainVerificationId": "712253090D4AC0E3287E8A87C0DB9AD441ECDE0D1AFCF0CC2722A658EA598D0A",
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": false,
+                "endToEndEncryptionEnabled": false,
+                "redundancyMode": "None",
+                "publicNetworkAccess": "Enabled",
+                "storageAccountRequired": false,
+                "virtualNetworkSubnetId": "[concat(parameters('virtualNetworks_vnet_west2_spoke01_externalid'), '/subnets/sub-wappint01')]",
+                "keyVaultReferenceIdentity": "SystemAssigned"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2024-04-01",
+            "name": "[parameters('sites_crmIngressoConecta_name')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_srv_plan_ingresso_conecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "kind": "app,migration",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "crm.dadossobreaprendizado.cloud",
+                        "sslState": "SniEnabled",
+                        "thumbprint": "F7806BBCF974FEA599EAF2DACC3CA4D8D5703BFD",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "crmingressoconecta.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "crmingressoconecta.scm.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_srv_plan_ingresso_conecta_name'))]",
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "dnsConfiguration": {},
+                "vnetRouteAllEnabled": true,
+                "vnetImagePullEnabled": false,
+                "vnetContentShareEnabled": false,
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": false,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 0,
+                    "minimumElasticInstanceCount": 0
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": true,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "ipMode": "IPv4",
+                "vnetBackupRestoreEnabled": false,
+                "customDomainVerificationId": "712253090D4AC0E3287E8A87C0DB9AD441ECDE0D1AFCF0CC2722A658EA598D0A",
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": false,
+                "endToEndEncryptionEnabled": false,
+                "redundancyMode": "None",
+                "storageAccountRequired": false,
+                "virtualNetworkSubnetId": "[concat(parameters('virtualNetworks_vnet_west2_spoke01_externalid'), '/subnets/sub-wappint01')]",
+                "keyVaultReferenceIdentity": "SystemAssigned"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/ftp')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/ftp')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/scm')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/scm')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/web')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "phpVersion": "5.6",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$appIngressoConecta",
+                "scmType": "GitHubAction",
+                "use32BitWorkerProcess": false,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetName": "980aa618-31b5-430d-9d88-4e21b18b7e5e_sub-wappint01",
+                "vnetRouteAllEnabled": true,
+                "vnetPrivatePortsCount": 0,
+                "publicNetworkAccess": "Enabled",
+                "localMySqlEnabled": false,
+                "managedServiceIdentityId": 108351,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "ipSecurityRestrictionsDefaultAction": "Allow",
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsDefaultAction": "Allow",
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "elasticWebAppScaleLimit": 0,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 1,
+                "azureStorageAccounts": {}
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/web')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "tags": {
+                "migration": "1.0.8"
+            },
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "phpVersion": "5.6",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$crmIngressoConecta",
+                "scmType": "GitHubAction",
+                "use32BitWorkerProcess": false,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetName": "980aa618-31b5-430d-9d88-4e21b18b7e5e_sub-wappint01",
+                "vnetRouteAllEnabled": true,
+                "vnetPrivatePortsCount": 0,
+                "localMySqlEnabled": false,
+                "managedServiceIdentityId": 108354,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 2147483647,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "elasticWebAppScaleLimit": 0,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 0,
+                "azureStorageAccounts": {}
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/7ba640ccbe8f47d8b2dbd63f48e4bf5a')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "OneDeploy",
+                "message": "OneDeploy",
+                "start_time": "2025-06-27T07:15:00.8967933Z",
+                "end_time": "2025-06-27T07:15:29.4136964Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/84c669fbd808414b939934b9a70824be')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "OneDeploy",
+                "message": "OneDeploy",
+                "start_time": "2025-06-27T06:53:17.2598837Z",
+                "end_time": "2025-06-27T06:53:28.254729Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/d083de0066d04e68b661cd4c7b040090')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "OneDeploy",
+                "message": "OneDeploy",
+                "start_time": "2025-06-27T06:52:54.8159037Z",
+                "end_time": "2025-06-27T06:53:19.2615697Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/eec6284c98e84683bce7b36807ac63eb')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "OneDeploy",
+                "message": "OneDeploy",
+                "start_time": "2025-06-27T07:14:40.8815198Z",
+                "end_time": "2025-06-27T07:15:31.9450154Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/', parameters('sites_appIngressoConecta_name'), '.azurewebsites.net')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "siteName": "appIngressoConecta",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/crm.dadossobreaprendizado.cloud')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "siteName": "crmIngressoConecta",
+                "hostNameType": "Verified",
+                "sslState": "SniEnabled",
+                "thumbprint": "F7806BBCF974FEA599EAF2DACC3CA4D8D5703BFD"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/', parameters('sites_crmIngressoConecta_name'), '.azurewebsites.net')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "siteName": "crmIngressoConecta",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/ingresso.dadossobreaprendizado.cloud')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "siteName": "appIngressoConecta",
+                "hostNameType": "Verified",
+                "sslState": "SniEnabled",
+                "thumbprint": "E22FEF016617B84A3B9E24EDC2FBB2CB67AA6F18"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/virtualNetworkConnections",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_appIngressoConecta_name'), '/980aa618-31b5-430d-9d88-4e21b18b7e5e_sub-wappint01')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_appIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "vnetResourceId": "[concat(parameters('virtualNetworks_vnet_west2_spoke01_externalid'), '/subnets/sub-wappint01')]",
+                "isSwift": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/virtualNetworkConnections",
+            "apiVersion": "2024-04-01",
+            "name": "[concat(parameters('sites_crmIngressoConecta_name'), '/980aa618-31b5-430d-9d88-4e21b18b7e5e_sub-wappint01')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_crmIngressoConecta_name'))]"
+            ],
+            "properties": {
+                "vnetResourceId": "[concat(parameters('virtualNetworks_vnet_west2_spoke01_externalid'), '/subnets/sub-wappint01')]",
+                "isSwift": true
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advancedThreatProtectionSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/CreateIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/DbParameterization')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/DefragmentIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/DropIndex')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/ForceLastGoodPlan')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Default')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "weeklyRetention": "PT0S",
+                "monthlyRetention": "PT0S",
+                "yearlyRetention": "PT0S",
+                "weekOfYear": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 7,
+                "diffBackupIntervalInHours": 24
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Current')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/crm_database/Default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_srv_sqlserver_ingresso_conecta_name'), 'crm_database')]",
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/privateEndpointConnections",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('servers_srv_sqlserver_ingresso_conecta_name'), '/pvt-endp-sql01-7d3db933-2046-4114-84f2-2d5c66a0982a')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('servers_srv_sqlserver_ingresso_conecta_name'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_pvt_endp_sql01_name'))]"
+            ],
+            "properties": {
+                "privateEndpoint": {
+                    "id": "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_pvt_endp_sql01_name'))]"
+                },
+                "privateLinkServiceConnectionState": {
+                    "status": "Approved",
+                    "description": "Auto-approved"
+                }
+            }
+        }
+    ]
+}
