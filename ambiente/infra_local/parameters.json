@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_vm_db_name": {
+            "value": null
+        },
+        "virtualMachines_vm_fw_name": {
+            "value": null
+        },
+        "virtualNetworks_vnet01_name": {
+            "value": null
+        },
+        "virtualNetworks_vnet02_name": {
+            "value": null
+        },
+        "virtualMachines_vm_app01_name": {
+            "value": null
+        },
+        "virtualMachines_vm_adds01_name": {
+            "value": null
+        },
+        "networkInterfaces_vm_db329_name": {
+            "value": null
+        },
+        "networkInterfaces_vm_fw740_name": {
+            "value": null
+        },
+        "publicIPAddresses_vm_fw_ip_name": {
+            "value": null
+        },
+        "networkInterfaces_vm_app01635_name": {
+            "value": null
+        },
+        "networkInterfaces_vm_adds01631_name": {
+            "value": null
+        },
+        "networkSecurityGroups_vm_db_nsg_name": {
+            "value": null
+        },
+        "routeTables_rt_table_vpn_traffic_name": {
+            "value": null
+        },
+        "networkSecurityGroups_vm_app01_nsg_name": {
+            "value": null
+        },
+        "routeTables_rt_table_vpn_traffic_2_name": {
+            "value": null
+        },
+        "sqlVirtualMachines_vm_db_name": {
+            "value": null
+        },
+        "networkSecurityGroups_vm_adds01_nsg_name": {
+            "value": null
+        },
+        "virtualNetworks_vnet_03_externalid": {
+            "value": null
+        }
+    }
+}
